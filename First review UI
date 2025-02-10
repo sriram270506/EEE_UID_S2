@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEE File Explorer</title>
+    <style>
+        /* Enhanced electrical theme */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Circuit board background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0,255,255,0.1) 1px, transparent 1px) 0 0,
+                linear-gradient(rgba(0,255,255,0.1) 1px, transparent 1px) 0 0;
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
+        /* Electrical sparks */
+        @keyframes spark {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .spark {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: cyan;
+            border-radius: 50%;
+            box-shadow: 0 0 10px cyan, 0 0 20px cyan, 0 0 30px cyan;
+            animation: spark 0.5s infinite;
+        }
+
+        h2 {
+            font-size: 36px;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Enhanced title glow effect */
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 10px cyan, 0 0 20px cyan; }
+            50% { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+            100% { text-shadow: 0 0 10px cyan, 0 0 20px cyan; }
+        }
+
+        h2 {
+            animation: titleGlow 2s infinite;
+        }
+
+         h3 {
+            animation: titleGlow 2s infinite;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+        }
+
+        /* Energy flow lines */
+        @keyframes energyFlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .energy-line {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, cyan, transparent);
+            animation: energyFlow 3s linear infinite;
+        }
+
+        /* Enhanced folder design */
+        .folder {
+            width: 280px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            border: 2px solid cyan;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Folder hover effect */
+        .folder:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px cyan;
+        }
+
+        .folder::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .documents {
+            display: none;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            width: 280px;
+            border: 1px solid cyan;
+            box-shadow: 0 0 15px rgba(0,255,255,0.3);
+            transform-origin: top;
+            animation: openFolder 0.3s ease-out;
+        }
+
+        @keyframes openFolder {
+            from { transform: scaleY(0); }
+            to { transform: scaleY(1); }
+        }
+
+        .documents div {
+            padding: 12px;
+            font-size: 18px;
+            background-color: rgba(0,255,255,0.05);
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,255,255,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .documents div:hover {
+            background-color: rgba(0,255,255,0.1);
+            box-shadow: 0 0 15px rgba(0,255,255,0.4);
+            transform: translateX(10px);
+        }
+
+        .documents div a {
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        /* Power button effect */
+        .power-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid cyan;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0,255,255,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0,255,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,255,255,0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="power-button">⚡</div>
+    <h2>🔌Semester - 2 : Project File Explorer 🔋</h2> <br>
+    <h3> Introduction to EEE - 22AIE114 </h3>
+    <h3> User Interface Design - 22AIE115 </h3>
+
+    <div class="container">
+        <div class="energy-line"></div>
+        <div class="folder" onclick="toggleDocuments('pptFolder')">PPT</div>
+        <div class="documents" id="pptFolder">
+            <div><a href="https://onedrive.live.com/edit.aspx?resid=3831396CFAE853F4!se63b541d75e84b3f94c9862306420436" target="_blank">Presentation1.pptx</a></div>
+        </div>
+
+        <div class="folder" onclick="toggleDocuments('litReviewFolder')">Literature Review</div>
+        <div class="documents" id="litReviewFolder">
+            <div><a href="https://www.mdpi.com/1996-1073/17/7/1580" target="_blank">Paper 1</a></div>
+            <div><a href="https://onlinelibrary.wiley.com/doi/10.1155/2024/6225510" target="_blank">Paper 2</a></div>
+            <div><a href="https://www.mdpi.com/2071-1050/14/21/14226" target="_blank">Paper 3</a></div>
+            <div><a href="https://www.mdpi.com/2079-9292/13/2/407" target="_blank">Paper 4</a></div>
+            <div><a href="https://ieeexplore.ieee.org/document/9328966/" target="_blank">Paper 5</a></div>
+
+        </div>
+    </div>
+
+    <script>
+        // Enhanced toggle function with smooth animations
+        function toggleDocuments(folderId) {
+            let folder = document.getElementById(folderId);
+            if (folder.style.display === "none" || folder.style.display === "") {
+                folder.style.display = "block";
+                createSpark(event);
+            } else {
+                folder.style.display = "none";
+            }
+        }
+
+        // Create electrical spark effect
+        function createSpark(e) {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = e.pageX + 'px';
+            spark.style.top = e.pageY + 'px';
+            document.body.appendChild(spark);
+            setTimeout(() => spark.remove(), 500);
+        }
+
+        // Add random sparks
+        setInterval(() => {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = x + 'px';
+            spark.style.top = y + 'px';
+            document.body.appendChild(spark);
+            setTimeout(() => spark.remove(), 500);
+        }, 2000);
+    </script>
+</body>
+</html>
