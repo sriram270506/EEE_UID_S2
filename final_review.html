@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI-Based Smart Grid Monitoring</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Landing Page Styling */
+    .landing {
+      background: linear-gradient(270deg, #1e3c72, #2a5298, #4a00e0);
+      background-size: 600% 600%;
+      animation: gradientFlow 15s ease infinite;
+      color: white;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .section, .team-section {
+      padding: 2rem;
+      margin: 2rem auto;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    .team-section {
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn {
+      margin-top: 2rem;
+      padding: 15px 30px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(90deg, #ff9800, #ff5722);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 183, 77, 0.8);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: linear-gradient(90deg, #ff5722, #ff9800);
+      transform: scale(1.1);
+    }
+
+    /* Dashboard Styling */
+    .dashboard {
+      display: none;
+      background: #f4f7f9;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(90deg, #007BFF, #00c6ff);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      border-bottom: 5px solid #0056b3;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    select, button {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      margin: 0.3rem;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      background: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    section.tab {
+      display: none;
+    }
+
+    section.tab.active {
+      display: block;
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-left: 5px solid #007BFF;
+      border-radius: 6px;
+    }
+
+    canvas {
+      max-width: 100%;
+      margin-top: 2rem;
+    }
+
+    .metrics span {
+      display: inline-block;
+      margin-right: 1.5rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Landing Page -->
+  <div class="landing" id="landingPage">
+    <div class="section">
+      <h1>AI-Based Smart Grid Energy Monitoring</h1>
+      <p>Welcome to our final EEE project! Explore AI-powered predictions in energy systems.</p>
+    </div>
+
+    <div class="team-section">
+      <h2>Team Members</h2>
+      <p>👨‍💻 Sriram CB.SC.U4AIE2466)</p>
+      <p>👩‍💻 Anakha (CB.SC.U4AIE24006)</p>
+      <p>👨‍💻 Chaithanya (CB.SC.U4AIE24013)</p>
+      <p>👨‍💻 Surabhi (CB.SC.U4AIE24057)</p>
+    </div>
+
+    <button class="btn" onclick="showDashboard()">View Dashboard</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboardPage">
+    <header>
+      <h1>⚡ Smart Grid Energy Monitoring Dashboard</h1>
+    </header>
+    <div class="container">
+      <div class="controls">
+        <select id="houseSelect">
+          <option>House 1</option>
+          <option>House 2</option>
+          <option>House 3</option>
+          <option>House 4</option>
+          <option>House 5</option>
+        </select>
+        <div>
+          <button onclick="switchTab('overview')">Overview</button>
+          <button onclick="switchTab('prediction')">Prediction</button>
+          <button onclick="switchTab('theft')">Theft</button>
+          <button onclick="switchTab('efficiency')">Efficiency</button>
+        </div>
+      </div>
+
+      <!-- Overview Tab -->
+      <section id="overview" class="tab active">
+        <h2>Energy Overview</h2>
+        <div class="card metrics">
+          <span id="mTotal"></span>
+          <span id="mAvg"></span>
+          <span id="mVolt"></span>
+        </div>
+        <canvas id="overviewChart"></canvas>
+      </section>
+
+      <!-- Prediction Tab -->
+      <section id="prediction" class="tab">
+        <h2>Appliance-Level Prediction</h2>
+        <div class="card">
+          <strong id="predDayLabel"></strong>
+        </div>
+        <canvas id="predictionChart"></canvas>
+      </section>
+
+      <!-- Theft Tab -->
+      <section id="theft" class="tab">
+        <h2>Theft Detection</h2>
+        <div class="card">
+          <p id="theftLabel"></p>
+          <p id="theftProb"></p>
+        </div>
+        <canvas id="theftChart"></canvas>
+      </section>
+
+      <!-- Efficiency Tab -->
+      <section id="efficiency" class="tab">
+        <h2>Efficiency Analysis</h2>
+        <div class="card">
+          <p id="mostEff"></p>
+          <p id="leastEff"></p>
+        </div>
+        <canvas id="efficiencyRadarChart"></canvas>
+        <canvas id="efficiencyBarChart"></canvas>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Dummy data for each house; replace with your PDF values
+    const houseData = {
+      "House 1": {
+        overview: {
+          total: "28.52 kWh",
+          avg: "340 W",
+          volt: "231 V",
+          labels: [...Array(24).keys()].map(i=>`${i}:00`),
+          series: [310,300,290,280,270,300,350,400,450,500,520,480,460,430,410,390,370,350,340,330,320,310,300,290]
+        },
+        prediction: {
+          day: "Day 25",
+          labels: ['Refrigerator','Washing Machine','Dishwasher','Microwave','TV','Lighting','AC','Computer'],
+          actual:    [2.4,3.2,2.9,1.1,1.8,1.2,4.5,1.5],
+          predicted: [2.5,3.4,3.0,1.0,1.9,1.1,4.2,1.6]
+        },
+        theft: {
+          day:       "Day 24",
+          probSeries:[10,15,22,87,20,18,12],
+          labels:    ["Day 22","Day 23","Day 24","Day 25","Day 26","Day 27","Day 28"]
+        },
+        efficiency: {
+          scores: [88,76,80,82,85,92,78,84],
+          most: "Lighting (92)",
+          least:"Washing Machine (76)"
+        }
+      },
+      "House 2": {
+        overview: { total:"30.10 kWh", avg:"360 W", volt:"229 V", labels:[...Array(24).keys()].map(i=>`${i}:00`),
+          series: [320,310,300,290,280,310,360,410,460,510,530,490,470,440,420,400,380,360,350,340,330,320,310,300] },
+        prediction:{ day:"Day 26", labels:['Refrigerator','Washing Machine','Dishwasher','Microwave','TV','Lighting','AC','Computer'],
+          actual:[2.6,3.0,2.7,1.2,1.9,1.3,4.3,1.4], predicted:[2.7,3.1,2.8,1.1,2.0,1.2,4.1,1.5] },
+        theft:    { day:"Day 23", labels:["Day 22","Day 23","Day 24","Day 25","Day 26","Day 27","Day 28"],
+          probSeries:[12,78,20,15,18,14,10] },
+        efficiency:{ scores:[90,78,82,80,87,90,80,86], most:"Refrigerator (90)", least:"Washing Machine (78)" }
+      },
+      "House 3": {
+        overview: { total:"27.40 kWh", avg:"330 W", volt:"233 V", labels:[...Array(24).keys()].map(i=>`${i}:00`),
+          series: [300,290,280,270,260,290,340,390,440,490,510,470,450,420,400,380,360,340,330,320,310,300,290,280] },
+        prediction:{ day:"Day 27", labels:['Refrigerator','Washing Machine','Dishwasher','Microwave','TV','Lighting','AC','Computer'],
+          actual:[2.2,3.3,2.6,1.0,1.7,1.1,4.6,1.3], predicted:[2.3,3.5,2.7,0.9,1.8,1.0,4.4,1.4] },
+        theft:    { day:"Day 25", labels:["Day 22","Day 23","Day 24","Day 25","Day 26","Day 27","Day 28"],
+          probSeries:[8,12,18,22,85,16,14] },
+        efficiency:{ scores:[85,74,78,84,88,90,82,83], most:"Lighting (90)", least:"Washing Machine (74)" }
+      },
+      "House 4": {
+        overview: { total:"29.00 kWh", avg:"350 W", volt:"230 V", labels:[...Array(24).keys()].map(i=>`${i}:00`),
+          series: [315,305,295,285,275,305,355,405,455,505,525,485,465,435,415,395,375,355,345,335,325,315,305,295] },
+        prediction:{ day:"Day 28", labels:['Refrigerator','Washing Machine','Dishwasher','Microwave','TV','Lighting','AC','Computer'],
+          actual:[2.5,3.1,2.8,1.3,1.9,1.2,4.4,1.6], predicted:[2.6,3.2,2.9,1.2,2.0,1.1,4.3,1.7] },
+        theft:    { day:"Day 26", labels:["Day 22","Day 23","Day 24","Day 25","Day 26","Day 27","Day 28"],
+          probSeries:[9,14,19,23,12,80,13] },
+        efficiency:{ scores:[87,79,81,83,86,91,79,85], most:"Lighting (91)", least:"Washing Machine (79)" }
+      },
+      "House 5": {
+        overview: { total:"31.20 kWh", avg:"370 W", volt:"232 V", labels:[...Array(24).keys()].map(i=>`${i}:00`),
+          series: [330,320,310,300,290,320,370,420,470,520,540,500,480,450,430,410,390,370,360,350,340,330,320,310] },
+        prediction:{ day:"Day 22", labels:['Refrigerator','Washing Machine','Dishwasher','Microwave','TV','Lighting','AC','Computer'],
+          actual:[2.7,3.4,3.1,1.4,2.0,1.3,4.7,1.7], predicted:[2.8,3.5,3.2,1.3,2.1,1.2,4.5,1.8] },
+        theft:    { day:"Day 22", labels:["Day 22","Day 23","Day 24","Day 25","Day 26","Day 27","Day 28"],
+          probSeries:[85,18,20,17,15,13,11] },
+        efficiency:{ scores:[89,77,83,81,88,93,77,87], most:"Lighting (93)", least:"Washing Machine (77)" }
+      }
+    };
+
+    let overviewChart, predictionChart, theftChart, efficiencyRadarChart, efficiencyBarChart;
+
+    function initCharts() {
+      // Overview
+      overviewChart = new Chart(document.getElementById('overviewChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets:[{ label:'Power (W)', data:[], borderColor:'#007BFF', fill:false, tension:0.3 }]},
+      });
+
+      // Prediction
+      predictionChart = new Chart(document.getElementById('predictionChart').getContext('2d'), {
+        type: 'bar',
+        data:{ labels:[], datasets:[
+          { label:'Actual (kWh)', data:[], backgroundColor:'#00b894' },
+          { label:'Predicted (kWh)', data:[], backgroundColor:'#0984e3' }
+        ]},
+      });
+
+      // Theft
+      theftChart = new Chart(document.getElementById('theftChart').getContext('2d'), {
+        type: 'line',
+        data:{ labels:[], datasets:[{
+            label:'Theft Probability (%)', data:[], backgroundColor:'rgba(255,99,132,0.2)',
+            borderColor:'#d63031', fill:true, tension:0.4 }]
+        },
+      });
+
+      // Efficiency Radar
+      efficiencyRadarChart = new Chart(document.getElementById('efficiencyRadarChart').getContext('2d'), {
+        type:'radar',
+        data:{ labels:[], datasets:[{
+            label:'Efficiency Score', data:[], backgroundColor:'rgba(0,123,255,0.2)',
+            borderColor:'#007BFF', pointBackgroundColor:'#007BFF'
+        }]},
+      });
+
+      // Efficiency Bar
+      efficiencyBarChart = new Chart(document.getElementById('efficiencyBarChart').getContext('2d'), {
+        type:'bar',
+        data:{ labels:[], datasets:[{
+            label:'Efficiency Score', data:[], backgroundColor:[
+              '#1f77b4','#d62728','#ff7f0e','#9467bd','#2ca02c','#00b894','#e17055','#6c5ce7'
+            ]
+        }]},
+        options:{ indexAxis:'y', scales:{ x:{ min:0, max:100 }}}
+      });
+    }
+
+    function updateDashboard() {
+      const h = document.getElementById('houseSelect').value;
+      const d = houseData[h];
+
+      // Overview
+      document.getElementById('mTotal').innerText = `Total Consumption: ${d.overview.total}`;
+      document.getElementById('mAvg').innerText   = `Average Power: ${d.overview.avg}`;
+      document.getElementById('mVolt').innerText  = `Voltage: ${d.overview.volt}`;
+      overviewChart.data.labels = d.overview.labels;
+      overviewChart.data.datasets[0].data = d.overview.series;
+      overviewChart.update();
+
+      // Prediction
+      document.getElementById('predDayLabel').innerText = `All appliances on ${d.prediction.day}`;
+      predictionChart.data.labels = d.prediction.labels;
+      predictionChart.data.datasets[0].data = d.prediction.actual;
+      predictionChart.data.datasets[1].data = d.prediction.predicted;
+      predictionChart.update();
+
+      // Theft
+      document.getElementById('theftLabel').innerText = `${d.theft.day}: Theft detected`;
+      document.getElementById('theftProb').innerText  = `Probability: ${d.theft.probSeries[d.theft.probSeries.indexOf(Math.max(...d.theft.probSeries))]}%`;
+      theftChart.data.labels = d.theft.labels;
+      theftChart.data.datasets[0].data = d.theft.probSeries;
+      theftChart.update();
+
+      // Efficiency
+      document.getElementById('mostEff').innerText = `Most Efficient: ${d.efficiency.most}`;
+      document.getElementById('leastEff').innerText= `Least Efficient: ${d.efficiency.least}`;
+      efficiencyRadarChart.data.labels = d.efficiency.scores.map((_,i)=>d.prediction.labels[i]);
+      efficiencyRadarChart.data.datasets[0].data = d.efficiency.scores;
+      efficiencyRadarChart.update();
+      efficiencyBarChart.data.labels = d.prediction.labels;
+      efficiencyBarChart.data.datasets[0].data = d.efficiency.scores;
+      efficiencyBarChart.update();
+    }
+
+    function showDashboard() {
+      document.getElementById("landingPage").style.display = "none";
+      document.getElementById("dashboardPage").style.display = "block";
+      initCharts();
+      updateDashboard();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // update on house change
+    document.getElementById('houseSelect').addEventListener('change', updateDashboard);
+  </script>
+
+</body>
+</html>
